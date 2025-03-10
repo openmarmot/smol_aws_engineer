@@ -5,40 +5,80 @@
     <title>Smol AWS Engineer</title>
     <style>
         body {
-            background: #002b36; /* Solarized Dark base03 */
-            color: #839496; /* Solarized Dark base0 */
+            background: #002b36;
+            color: #839496;
             font-family: monospace;
             margin: 0;
             padding: 10px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
         #history {
-            height: 80vh; /* Takes up most of the screen */
-            overflow-y: auto; /* Enables scrolling */
-            background: #073642; /* Solarized Dark base02 */
-            color: #93a1a1; /* Solarized Dark base1 */
+            flex-grow: 1;
+            overflow-y: auto;
+            background: #073642;
+            color: #93a1a1;
             padding: 10px;
+            margin-bottom: 10px;
         }
         #history pre {
             margin: 0;
             padding: 5px;
-            border-bottom: 1px solid #586e75; /* Solarized Dark base01 */
+            border-bottom: 1px solid #586e75;
         }
         form {
-            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
-        input[type="text"] {
-            width: 80%;
+        textarea {
+            width: 100%;
             padding: 5px;
             background: #073642;
             color: #93a1a1;
             border: 1px solid #586e75;
+            resize: vertical;
+        }
+        label {
+            color: #93a1a1;
+            margin-right: 5px;
+        }
+        input[type="checkbox"] {
+            margin: 10px 0;
+        }
+        #cron-fields {
+            display: none;
+            margin-top: 10px;
+        }
+        #cron-fields input {
+            margin-top: 5px;
         }
         button {
             padding: 5px 10px;
-            background: #268bd2; /* Solarized Dark blue */
-            color: #fdf6e3; /* Solarized Dark base3 */
+            background: #268bd2;
+            color: #fdf6e3;
             border: none;
             cursor: pointer;
+            margin-top: 10px;
+        }
+        #cron-tasks {
+            background: #073642;
+            padding: 10px;
+            color: #93a1a1;
+            margin-top: 10px;
+        }
+        .cron-task {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #586e75;
+        }
+        .cron-task button {
+            margin-left: 10px;
+            background: #cb4b16;
+        }
+        .cron-task button.enable {
+            background: #859900;
         }
     </style>
 </head>
@@ -46,40 +86,108 @@
     <h1>Smol AWS Engineer</h1>
     <div id="history"></div>
     <form id="command-form">
-        <input type="text" id="command-input" placeholder="Enter command">
+        <textarea id="command-input" rows="3" placeholder="Enter command"></textarea>
+        <input type="checkbox" id="cron-toggle"> Schedule as cron job
+        <div id="cron-fields">
+            <label for="cron-start-time">Start Time:</label>
+            <input type="datetime-local" id="cron-start-time">
+            <label for="cron-interval">Interval (seconds):</label>
+            <input type="number" id="cron-interval" placeholder="Interval (seconds)" min="1">
+        </div>
         <button type="submit">Submit</button>
     </form>
+    <div id="cron-tasks"></div>
     <br><br>
     <p>Have a great day!</p>
     <a href="https://github.com/openmarmot/smol_aws_engineer">https://github.com/openmarmot/smol_aws_engineer</a>
     <script>
+        // Toggle cron fields visibility
+        document.getElementById('cron-toggle').addEventListener('change', function() {
+            var cronFields = document.getElementById('cron-fields');
+            cronFields.style.display = this.checked ? 'block' : 'none';
+        });
+
         // Poll history every second
-        setInterval(function() {
-            fetch('/history').then(function(response) {
-                return response.text();
-            }).then(function(html) {
-                var historyDiv = document.getElementById('history');
-                historyDiv.innerHTML = html;
-                historyDiv.scrollTop = historyDiv.scrollHeight; // Scroll to bottom
-            });
+        setInterval(() => {
+            fetch('/history')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('history').innerHTML = html;
+                    document.getElementById('history').scrollTop = document.getElementById('history').scrollHeight;
+                });
+        }, 1000);
+
+        // Poll cron tasks every second
+        setInterval(() => {
+            fetch('/cron_tasks')
+                .then(response => response.json())
+                .then(tasks => {
+                    let html = tasks.map(task => `
+                        <div class="cron-task">
+                            ID: ${task.id} | Command: ${task.command} | Start: ${task.start_time} | Interval: ${task.interval}s | 
+                            Enabled: ${task.enabled ? 'Yes' : 'No'}
+                            <button onclick="toggleCron(${task.id})">${task.enabled ? 'Disable' : 'Enable'}</button>
+                            <button onclick="deleteCron(${task.id})">Delete</button>
+                        </div>
+                    `).join('');
+                    document.getElementById('cron-tasks').innerHTML = html;
+                });
         }, 1000);
 
         // Handle form submission
         document.getElementById('command-form').addEventListener('submit', function(event) {
             event.preventDefault();
-            var text = document.getElementById('command-input').value;
-            fetch('/submit', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'text=' + encodeURIComponent(text),
-            }).then(function(response) {
-                if (response.ok) {
-                    document.getElementById('command-input').value = ''; // Clear input
-                }
-            });
+            var command = document.getElementById('command-input').value;
+            var isCron = document.getElementById('cron-toggle').checked;
+
+            if (isCron) {
+                var startTime = document.getElementById('cron-start-time').value.replace('T', ' ');
+                var interval = document.getElementById('cron-interval').value;
+                fetch('/submit_cron', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `command=${encodeURIComponent(command)}&start_time=${encodeURIComponent(startTime)}&interval=${interval}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'scheduled') {
+                        document.getElementById('command-input').value = '';
+                        document.getElementById('cron-toggle').checked = false;
+                        document.getElementById('cron-fields').style.display = 'none';
+                    } else {
+                        alert(data.message || 'Error scheduling cron');
+                    }
+                });
+            } else {
+                fetch('/submit', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: 'command=' + encodeURIComponent(command)
+                }).then(response => {
+                    if (response.ok) {
+                        document.getElementById('command-input').value = '';
+                    }
+                });
+            }
         });
+
+        // Toggle cron task
+        function toggleCron(cronId) {
+            fetch(`/toggle_cron/${cronId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 'success') alert('Error toggling cron');
+                });
+        }
+
+        // Delete cron task
+        function deleteCron(cronId) {
+            fetch(`/delete_cron/${cronId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 'success') alert('Error deleting cron');
+                });
+        }
     </script>
 </body>
 </html>

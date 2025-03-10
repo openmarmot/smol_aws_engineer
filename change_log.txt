@@ -1,0 +1,5 @@
+Smol AWS Engineer : Change Log
+
+----------------------------------
+March 10 2025
+- added a cron option

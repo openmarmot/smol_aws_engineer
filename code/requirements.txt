@@ -2,3 +2,4 @@ flask
 boto3
 smolagents
 smolagents[openai]
+schedule

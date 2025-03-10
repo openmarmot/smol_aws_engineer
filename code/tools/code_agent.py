@@ -19,7 +19,11 @@ def run_agent(query):
     api_key="none"
     )
 
-    agent = CodeAgent(tools=[], model=model,max_steps=10,additional_authorized_imports=["boto3","json"])
+    # note - adding the duckduckgo search tool tends to cause it to search instead of write boto3 code
+    tools=[]
+    python_imports=["boto3","json"]
+    
+    agent = CodeAgent(tools=tools, model=model,max_steps=10,additional_authorized_imports=python_imports)
     result=agent.run(query)
 
     # some additional text processing

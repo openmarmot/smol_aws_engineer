@@ -30,3 +30,4 @@ NOTE - OBVIOUSLY USE AT YOUR OWN RISK. I HIGHLY RECOMMEND STARTING WITH A USER W
 - [HuggingFace Agents course that I will totally go through at some point](https://huggingface.co/learn/agents-course/unit0/introduction)
 - [HuggingFace SmolAgents Docs](https://huggingface.co/docs/smolagents/)
 - [SmolAgents Github](https://github.com/huggingface/smolagents)
+- [SmolAgents AI Model Leaderboard](https://huggingface.co/spaces/smolagents/smolagents-leaderboard)
