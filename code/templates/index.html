@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smol AWS Engineer</title>
+    <style>
+        body {
+            background: #002b36; /* Solarized Dark base03 */
+            color: #839496; /* Solarized Dark base0 */
+            font-family: monospace;
+            margin: 0;
+            padding: 10px;
+        }
+        #history {
+            height: 80vh; /* Takes up most of the screen */
+            overflow-y: auto; /* Enables scrolling */
+            background: #073642; /* Solarized Dark base02 */
+            color: #93a1a1; /* Solarized Dark base1 */
+            padding: 10px;
+        }
+        #history pre {
+            margin: 0;
+            padding: 5px;
+            border-bottom: 1px solid #586e75; /* Solarized Dark base01 */
+        }
+        form {
+            margin-top: 10px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 5px;
+            background: #073642;
+            color: #93a1a1;
+            border: 1px solid #586e75;
+        }
+        button {
+            padding: 5px 10px;
+            background: #268bd2; /* Solarized Dark blue */
+            color: #fdf6e3; /* Solarized Dark base3 */
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Smol AWS Engineer</h1>
+    <div id="history"></div>
+    <form id="command-form">
+        <input type="text" id="command-input" placeholder="Enter command">
+        <button type="submit">Submit</button>
+    </form>
+    <br><br>
+    <p>Have a great day!</p>
+    <a href="https://github.com/openmarmot/smol_aws_engineer">https://github.com/openmarmot/smol_aws_engineer</a>
+    <script>
+        // Poll history every second
+        setInterval(function() {
+            fetch('/history').then(function(response) {
+                return response.text();
+            }).then(function(html) {
+                var historyDiv = document.getElementById('history');
+                historyDiv.innerHTML = html;
+                historyDiv.scrollTop = historyDiv.scrollHeight; // Scroll to bottom
+            });
+        }, 1000);
+
+        // Handle form submission
+        document.getElementById('command-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var text = document.getElementById('command-input').value;
+            fetch('/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'text=' + encodeURIComponent(text),
+            }).then(function(response) {
+                if (response.ok) {
+                    document.getElementById('command-input').value = ''; // Clear input
+                }
+            });
+        });
+    </script>
+</body>
+</html>
