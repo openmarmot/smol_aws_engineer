@@ -1,5 +1,14 @@
 Smol AWS Engineer : Change Log
 
 ----------------------------------
+March 18 2025
+- added get_aws_ec2_instances tool
+
+added a tool to test custom tool use. 
+
+it works fine but the 8b model still takes a couple tries to actually return 
+the results from it. i suspect a larger model would be a lot better
+
+----------------------------------
 March 10 2025
 - added a cron option
