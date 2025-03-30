@@ -7,12 +7,15 @@ AWS Environment
 ![screenshot](/screenshots/smol_aws_engineer.png "Smol AWS Engineer")
 
 ### Status :
-Just getting started.
+Basic functionality is in place.
 
-So far no tools have been added but the agent can use Python and Boto3 to access your AWS environment if 
-you have the AWS ClI credentials setup on your system.
+I've tested it with Llama 3.1 8b running locally with llama.cpp and also with Grok2 via OpenRouter. Both models work well.
+Any instruction model should work - however thinking models tend to confuse it with the thinking segments.
 
-It is pretty good at writing AWS code (depending on the model you use), so.. beware the consequences of what you ask.
+I've code a tool to get EC2 instance data, but in general I've found that including the tool confuses it a bit and it tends 
+to overuse it. It is very prompt sensitive. Including the words "Using Boto3" will often be enough to guide it in the right 
+direction. For basic commands a tool is not needed and most modern models will do quite well writing boto3 code - although 
+often it takes a couple tries to get it right.  
 
 NOTE - OBVIOUSLY USE AT YOUR OWN RISK. I HIGHLY RECOMMEND STARTING WITH A USER WITH TIGHTLY CONTROLLED READ ONLY PERMISSIONS
 
