@@ -1,0 +1,4 @@
+SE_MODEL_ID=""
+SE_API_BASE=""
+SE_API_KEY=""
+python smol_aws_engineer.py

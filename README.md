@@ -20,7 +20,8 @@ NOTE - OBVIOUSLY USE AT YOUR OWN RISK. I HIGHLY RECOMMEND STARTING WITH A USER W
 - Setup the AWS CLI on your system
 - Associate the AWS CLI with a AWS API key for a user. To start I strongly recommend read only permissions !!
 - pip install the modules in the requirements.txt
-- Setup a llama.cpp server locally (update the URL in code_agent.py). 
+- Setup a llama.cpp server locally or get access to a openai compatible endpoint.
+- copy start_server.example as start_server.sh and fill in the variables for your llm server 
 - run smol_aws_engineer.py with python
 - navigate to your web browser.
 - Enter a query and the Smol AWS Engineer will attempt to answer it

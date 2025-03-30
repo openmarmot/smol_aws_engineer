@@ -1,6 +1,16 @@
 Smol AWS Engineer : Change Log
 
 ----------------------------------
+March 29 2025
+- switched over to using env variables for the llm server config data 
+
+start_server.example is a example of how you would use a shell script 
+to set the env variables and start the server. 
+
+tested openrouter with grok2 as a alternative to a locally hosted model 
+and confirmed it worked well
+
+----------------------------------
 March 18 2025
 - added get_aws_ec2_instances tool
 
