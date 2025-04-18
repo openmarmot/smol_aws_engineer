@@ -35,7 +35,10 @@ def run_agent(query):
     )
 
     # note - adding the duckduckgo search tool tends to cause it to search instead of write boto3 code
-    tools=[get_aws_ec2_instances]
+    # adding the ec2_instances tool tends to cause it to use this tool in situations that don't make sense
+    # it is actually better without it as long as you tell it to use 'boto3'
+    #tools=[get_aws_ec2_instances]
+    tools=[]
     python_imports=["boto3","json"]
     
     agent = CodeAgent(tools=tools, model=model,max_steps=10,additional_authorized_imports=python_imports)

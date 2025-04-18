@@ -1,6 +1,19 @@
 Smol AWS Engineer : Change Log
 
 ----------------------------------
+April 18 2025
+- removed the aws ec2 tool from the tool list 
+
+I did some more testing with grok2 and the newer grok-3-mini reasoning model. 
+It seems like smolagents doesn't work with reasoning models. As far as I can tell 
+it is failing to parse code from the output, It just displays blank lines for the code.
+
+Grok2 continues to work well if you tell it to use boto3 in your prompt.
+Amusingly with the ec2 tool enabled it seems to feel like it should be using it - even in cases 
+where it doesn't make sense. I think this is a general flaw with using smolagents as a aws tool - 
+basically the model can write boto3 code better than it can use tools that you write for it.
+
+----------------------------------
 March 29 2025
 - switched over to using env variables for the llm server config data 
 
